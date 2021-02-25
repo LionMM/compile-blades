@@ -1,49 +1,53 @@
 {
-    "name": "te-cho/compile-blades",
-    "description": "updated version te-cho/compile-blades to compile blades into a new file instead of overwriting the old file.",
-    "authors": [
-        {
-            "name": "Abidul Wahab Ramadan",
-            "email": "abidul.rdmdn@gmail.com"
-        },
-        {
-            "name": "Lisa Wouters",
-            "email": "lisa@fw4.be"
-        }
-    ],
-    "license": "MIT",
-    "require": {
-        "php": ">=5.5.9",
-        "illuminate/contracts": "5.0.*|5.1.*|5.2.*|5.3.*|5.4.*|5.5.*|5.6.*|5.7.*|5.8.*|5.9.*",
-        "illuminate/support": "5.0.*|5.1.*|5.2.*|5.3.*|5.4.*|5.5.*|5.6.*|5.7.*|5.8.*",
-        "illuminate/console": "5.0.*|5.1.*|5.2.*|5.3.*|5.4.*|5.5.*|5.6.*|5.7.*|5.8.*",
-        "illuminate/view": "5.0.*|5.1.*|5.2.*|5.3.*|5.4.*|5.5.*|5.6.*|5.7.*|5.8.*",
-        "symfony/process": "^2.6|^3.1.0|4.1.*|4.2.*|4.3.*|4.4.*"
-      },
-    "require-dev": {
-        "phpunit/phpunit": "~4.8|~5.0|~6.0|~7.0|~7.5",
-        "mockery/mockery": "0.9.*|^1.0"
+  "name": "lionmm/compile-blades",
+  "description": "Fork of te-cho/compile-blades to compile blades into a new file instead of overwriting the old file.",
+  "authors": [
+    {
+      "name": "Abidul Wahab Ramadan",
+      "email": "abidul.rdmdn@gmail.com"
     },
-    "autoload": {
-        "psr-4": {
-            "Techo\\CompileBlades\\": "./src/"
-        }
+    {
+      "name": "Lisa Wouters",
+      "email": "lisa@fw4.be"
     },
-    "autoload-dev": {
-        "classmap": [
-            "tests/TestCase.php"
-        ]
-    },
-    "config": {
-        "preferred-install": "dist"
-    },
-    "minimum-stability": "stable",
-    "prefer-stable": true,
-    "extra": {
-        "laravel": {
-            "providers": [
-                "Techo\\CompileBlades\\CompileBladesServiceProvider"
-            ]
-        }
+    {
+      "name": "Kirill Snovidov",
+      "email": "github@snovidov.com"
     }
+  ],
+  "license": "MIT",
+  "require": {
+    "php": "^7.3|^8.0",
+    "illuminate/contracts": "^7.0.0|^8.0.0",
+    "illuminate/support": "^7.30.4|^8.29.0",
+    "illuminate/console": "^7.0.0|^8.0.0",
+    "illuminate/view": "^7.0.0|^8.0.0",
+    "symfony/process": "^2.6|^3.1.0|^4.1.0|^5.0.0"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^8.0|^9.0",
+    "mockery/mockery": "0.9.*|^1.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "Lionmm\\CompileBlades\\": "./src/"
+    }
+  },
+  "autoload-dev": {
+    "classmap": [
+      "tests/TestCase.php"
+    ]
+  },
+  "config": {
+    "preferred-install": "dist"
+  },
+  "minimum-stability": "stable",
+  "prefer-stable": true,
+  "extra": {
+    "laravel": {
+      "providers": [
+        "Lionmm\\CompileBlades\\CompileBladesServiceProvider"
+      ]
+    }
+  }
 }

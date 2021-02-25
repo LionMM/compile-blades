@@ -1,10 +1,10 @@
 <?php
 
-namespace Techo\CompileBlades;
+namespace Lionmm\CompileBlades;
 
 use Illuminate\Support\ServiceProvider;
-use Techo\CompileBlades\Console\CompileAllBlades;
-use Techo\CompileBlades\Console\CompileBlades;
+use Lionmm\CompileBlades\Console\CompileAllBlades;
+use Lionmm\CompileBlades\Console\CompileBlades;
 
 /**
  * Class CompileBladesServiceProvider

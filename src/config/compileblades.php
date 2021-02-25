@@ -11,7 +11,7 @@ return [
     |
     */
 
-    'nesting' => 2,
+    'nesting' => 5,
 
     /*
     |--------------------------------------------------------------------------
@@ -23,7 +23,7 @@ return [
     | Default: false
     |
     */
-   
+
     'view_composers' => [
         'exclude_sections' => false,
         'composerserviceprovider_location' => '', // e.g. app_path('Providers/ComposerServiceProvider.php'),
@@ -39,7 +39,7 @@ return [
     | Set the value to NULL if you want to overwrite the view.
     |
     */
-   
+
     'auto_compilers' => [
         // e.g. view => compiled/view,
     ],
@@ -53,9 +53,8 @@ return [
     | WARNING! Views that are defined here will not be compiled even if they are defined in the "auto_compilers" array !
     |
     */
-   
-    'excluded_views' => [
-        
-    ]
 
+    'excluded_views' => [
+        //
+    ]
 ];
