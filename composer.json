@@ -1,6 +1,6 @@
 {
-    "name": "te-cho/compile-blades",
-    "description": "updated version te-cho/compile-blades to compile blades into a new file instead of overwriting the old file.",
+    "name": "lionmm/compile-blades",
+    "description": "Fork of te-cho/compile-blades to compile blades into a new file instead of overwriting the old file.",
     "authors": [
         {
             "name": "Abidul Wahab Ramadan",
