@@ -3,6 +3,7 @@
 namespace Techo\CompileBlades;
 
 use Illuminate\Support\ServiceProvider;
+use Techo\CompileBlades\Console\CompileAllBlades;
 use Techo\CompileBlades\Console\CompileBlades;
 
 /**
@@ -22,8 +23,13 @@ class CompileBladesServiceProvider extends ServiceProvider
             $this->commands(
                 [
                     CompileBlades::class,
+                    CompileAllBlades::class,
                 ]
             );
         }
+
+        $this->publishes([
+            __DIR__.'/config/compileblades.php' => config_path('compileblades.php'),
+        ], 'config');
     }
 }
