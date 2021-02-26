@@ -4,22 +4,26 @@ if (!function_exists('compiled_view')) {
     /**
      * Wrapper for original view helper for using compiled and flatted blade templates
      *
-     * @param string|string[]|null $view
+     * @param string|string[] $view
      * @param \Illuminate\Contracts\Support\Arrayable|array $data
      * @param array $mergeData
      * @return \Illuminate\Contracts\View\View|\Illuminate\Contracts\View\Factory
      */
-    function compiled_view($view = null, $data = [], $mergeData = [])
+    function compiled_view($view, $data = [], $mergeData = [])
     {
         $fallbackView = null;
         if (is_array($view)) {
             [$compiledView, $fallbackView] = $view;
         } else {
-            $compiledView = $view;
             if (config('compileblades.default_folder') & strpos($view, config('compileblades.default_folder')) === 0) {
+                $compiledView = $view;
                 $fallbackView = substr($view, strlen(config('compileblades.default_folder') + 1));
+            } else {
+                $compiledView = config('compileblades.default_folder') . '.' . $view;
+                $fallbackView = $view;
             }
         }
+
         if (view()->exists($compiledView)) {
             return view($compiledView, $data, $mergeData);
         }

@@ -21,7 +21,7 @@ class CompileAutoBlades extends Command
                 continue;
             }
             $this->callSilent(
-                'blades:compile',
+                'view:compile',
                 [
                     'blade-name' => $blade,
                     '--location' => $location
@@ -32,7 +32,7 @@ class CompileAutoBlades extends Command
 
         $bar->finish();
 
-        $this->info('All blade templates compiled successfully!');
+        $this->info(PHP_EOL . 'All blade templates compiled successfully!');
 
         return 0;
     }

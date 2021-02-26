@@ -31,9 +31,17 @@ This version of package working only with Laravel 8+
 
 From your project's base path, run:
 
+```shell
     $ composer require lionmm/compile-blades
+```
+
 
 ### 2) Configure Laravel
+
+
+```shell
+    $ ./artisan vendor:publish --provider="Lionmm\CompileBlades\CompileBladesServiceProvider"
+```
 
 WIP
 
@@ -45,8 +53,9 @@ Before getting started, I highly recommend reading through Laravels documentatio
 
 Providing everything is set up and configured properly, all you need to do in order to flatten a view for a certain
 route or something else, is running the following command:
-
+```shell
     $ php artisan view:compile view.name
+```
 
 This will generate a flattened view instead of the current one.
 
