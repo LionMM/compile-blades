@@ -31,7 +31,10 @@
   "autoload": {
     "psr-4": {
       "Lionmm\\CompileBlades\\": "./src/"
-    }
+    },
+    "files": [
+      "./src/Helper.php"
+    ]
   },
   "autoload-dev": {
     "classmap": [

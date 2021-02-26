@@ -15,6 +15,19 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Default folder
+    |--------------------------------------------------------------------------
+    |
+    | Define folder for placing compiled views if not set --location parameter
+    | Set null if you want to replace original view file
+    | Default: compiled
+    |
+    */
+
+    'default_folder' => 'compiled',
+
+    /*
+    |--------------------------------------------------------------------------
     | View Composers
     |--------------------------------------------------------------------------
     |
@@ -41,7 +54,9 @@ return [
     */
 
     'auto_compilers' => [
-        // e.g. view => compiled/view,
+        // e.g. view => compiled-view,
+        // e.g. other.view => compiled.view-other,
+        // e.g. third.view => null,
     ],
 
     /*

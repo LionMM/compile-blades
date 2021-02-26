@@ -4,10 +4,10 @@ namespace Lionmm\CompileBlades\Console;
 
 use Illuminate\Console\Command;
 
-class CompileAllBlades extends Command
+class CompileAutoBlades extends Command
 {
-    protected $signature = 'blades:all';
-    protected $description = 'Compile all predefined views';
+    protected $signature = 'view:compile:auto';
+    protected $description = 'Flatten predefined application\'s Blade templates. Run it before view:cache!';
 
     public function handle(): int
     {

@@ -6,12 +6,13 @@ use Illuminate\Console\Command;
 
 class CompileBlades extends Command
 {
-    protected $signature = 'blades:compile {blade-name} {--location=}';
-    protected $description = 'Compile blades into 1 flat file';
+    protected $signature = 'view:compile {blade-name} {--location=}';
+    protected $description = 'Flatten blade template with includes into 1 flat file';
 
     public function handle()
     {
         $viewName = $this->argument('blade-name');
+        $placeLocation = $this->option('location');
 
         if (in_array($viewName, config('compileblades.excluded_views'), true)) {
             $this->error(sprintf('%s is excluded', $viewName));
@@ -20,14 +21,15 @@ class CompileBlades extends Command
 
         $blade = $this->compile(view($viewName)->getPath());
 
-        if (is_null($this->option('location'))) {
-            file_put_contents(view($viewName)->getPath(), $blade);
-            $this->info($viewName . ' compiled successfully!');
-
-            return 0;
+        if (!$placeLocation) {
+            if ($defaultLocation = config('compileblades.default_folder')) {
+                $placeLocation = $defaultLocation . '.' . $viewName;
+            } else {
+                $placeLocation = $viewName;
+            }
         }
 
-        $location = str_replace('.', '/', $this->option('location'));
+        $location = str_replace('.', '/', $placeLocation);
         $newPath = resource_path('views') . "/$location.blade.php";
 
         $dirname = dirname($newPath);

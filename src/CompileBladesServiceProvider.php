@@ -3,7 +3,7 @@
 namespace Lionmm\CompileBlades;
 
 use Illuminate\Support\ServiceProvider;
-use Lionmm\CompileBlades\Console\CompileAllBlades;
+use Lionmm\CompileBlades\Console\CompileAutoBlades;
 use Lionmm\CompileBlades\Console\CompileBlades;
 
 /**
@@ -14,7 +14,6 @@ class CompileBladesServiceProvider extends ServiceProvider
 {
     public function register()
     {
-
     }
 
     public function boot()
@@ -23,13 +22,16 @@ class CompileBladesServiceProvider extends ServiceProvider
             $this->commands(
                 [
                     CompileBlades::class,
-                    CompileAllBlades::class,
+                    CompileAutoBlades::class,
                 ]
             );
         }
 
-        $this->publishes([
-            __DIR__.'/config/compileblades.php' => config_path('compileblades.php'),
-        ], 'config');
+        $this->publishes(
+            [
+                __DIR__ . '/config/compileblades.php' => config_path('compileblades.php'),
+            ],
+            'config'
+        );
     }
 }
