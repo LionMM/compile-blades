@@ -15,7 +15,7 @@ if (!function_exists('compiled_view')) {
         if (is_array($view)) {
             [$compiledView, $fallbackView] = $view;
         } else {
-            if (config('compileblades.default_folder') & strpos($view, config('compileblades.default_folder')) === 0) {
+            if (config('compileblades.default_folder') && strpos($view, config('compileblades.default_folder')) === 0) {
                 $compiledView = $view;
                 $fallbackView = substr($view, strlen(config('compileblades.default_folder') + 1));
             } else {

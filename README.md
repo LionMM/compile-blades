@@ -2,6 +2,10 @@
 
 A Laravel package for compiling blades nested in 1 file into 1 flattened file.
 
+Refactored and tested only for Laravel 8
+
+Be ready to refactor your views for using this command ;)
+
 ## Why?
 
 > For best performance, you may want to consider flattening your blades on production, cause a lot of nesting consumes time in laravel
@@ -59,4 +63,14 @@ route or something else, is running the following command:
 
 This will generate a flattened view instead of the current one.
 
+Better way: pic needed blades in `auto_compilers` section of configuration and use command
+```shell
+    $ php artisan view:compile:auto
+```
+
+By default, folder `compiled` will be created in your `resources/views` path and flatten files will be placed in it
+
+Now you can use command `compiled_view();` instead of `view();` for using flatten views IF they present
+
 WIP
+

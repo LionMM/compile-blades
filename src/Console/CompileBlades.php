@@ -16,6 +16,7 @@ class CompileBlades extends Command
 
         if (in_array($viewName, config('compileblades.excluded_views'), true)) {
             $this->error(sprintf('%s is excluded', $viewName));
+
             return 0;
         }
 
@@ -50,6 +51,7 @@ class CompileBlades extends Command
     {
         $blade = file_get_contents($viewPath);
         $this->clearComments($blade);
+        $this->replacePhpSections($blade);
         $this->implodeLayout($blade); //A1 @inprogress
         $this->implodeIncludes($blade); //A2 @pending
 
@@ -91,6 +93,7 @@ class CompileBlades extends Command
             foreach ($includesWithVariables as $subViewName => $arrayOfVariables) {
                 $subView = $arrayOfVariables . "\r\n" . file_get_contents(view($subViewName)->getPath());
                 $this->clearComments($subView);
+                $this->replacePhpSections($subView);
                 $blade = preg_replace(
                     "/@include[(]['|\"]" . $subViewName . "['|\"]((,)(.*?))?[)]$/sim",
                     $subView,
@@ -138,6 +141,12 @@ class CompileBlades extends Command
         $blade = preg_replace('/{{--.*--}}/', '', $blade);
     }
 
+    private function replacePhpSections(&$blade)
+    {
+        $blade = preg_replace('/@php[^(]/', '<?php' . PHP_EOL, $blade);
+        $blade = preg_replace('/@endphp/', '?>', $blade);
+    }
+
     private function replaceLayout(&$blade): void
     {
         //find the extended file
@@ -150,6 +159,7 @@ class CompileBlades extends Command
             //bring the layout
             $layout = file_get_contents(view($layout)->getPath());
             $this->clearComments($layout);
+            $this->replacePhpSections($layout);
             $blade .= ' ' . $layout;
         }
     }
