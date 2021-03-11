@@ -1,58 +1,53 @@
-# compile-blades 
+# compile-blades
 
 A Laravel package for compiling blades nested in 1 file into 1 flattened file.
 
- 
+Refactored and tested only for Laravel 8
+
+Be ready to refactor your views for using this command ;)
+
 ## Why?
 
 > For best performance, you may want to consider flattening your blades on production, cause a lot of nesting consumes time in laravel
 > since each nested level repeats the same pipline process, that consumes time & memory.
 
-Example of problems:
+### Example of problems:
+
 - https://stackoverflow.com/questions/30673129/laravel-blades-performance/44863712#44863712
 - https://laracasts.com/discuss/channels/laravel/how-to-improve-laravel-views-performance-when-using-multiple-times-same-view-file-or-howto-avoid-repeating-expensive-read-file-operation
 
-
 **Table of Contents**
 
+- [Requirements](#requirements)
 - [Installation](#installation)
-    - [1) Require the package](#2-require-the-package)
-    - [2) Configure Laravel](#3-configure-laravel)
+    - [1) Require the package](#1-require-the-package)
+    - [2) Configure Laravel](#2-configure-laravel)
 - [Usage](#usage)
-    - [Generating flatened blade file](#generating-flattened-blade)
-- [A demo](#a-demo)
-    - [Perfomance Insights results](#profiler-resutls)
+    - [Flattening Views](#flattening-views)
 
+## Requirements
+
+This version of package working only with Laravel 8+
+
+## Installation
 
 ### 1) Require the package
 
-Next, you'll need to require the package using Composer:
-
 From your project's base path, run:
 
-    $ composer require te-cho/compile-blades
+```shell
+    $ composer require lionmm/compile-blades
+```
+
 
 ### 2) Configure Laravel
 
-#### Service Provider
 
-Add the following to the `providers` key in `config/app.php`:
-
-``` php
-'providers' => [
-    Techo\CompileBlades\CompileBladesServiceProvider::class,
-];
+```shell
+    $ ./artisan vendor:publish --provider="Lionmm\CompileBlades\CompileBladesServiceProvider"
 ```
 
-#### Console
-
-To get access to the `compile:blades` command, add the following to the `$commands` property in `app/Console/Kernel.php`:
-
-``` php
-protected $commands = [
-    \Techo\CompileBlades\Console\CompileBlades::class,
-];
-```
+WIP
 
 ## Usage
 
@@ -60,23 +55,22 @@ Before getting started, I highly recommend reading through Laravels documentatio
 
 ### Flattening Views:
 
-Providing everything is set up and configured properly, all you need to do in order to flatten a view for a certain route or something else, is running the following command:
-
-    $ php artisan compile:blades view-name
+Providing everything is set up and configured properly, all you need to do in order to flatten a view for a certain
+route or something else, is running the following command:
+```shell
+    $ php artisan view:compile view.name
+```
 
 This will generate a flattened view instead of the current one.
 
+Better way: pic needed blades in `auto_compilers` section of configuration and use command
+```shell
+    $ php artisan view:compile:auto
+```
 
-## Example: 
-Lets say we have a view called test.blade.php that is called by one of our controllers, which is including another view
-inside of it, but the problem is that its looping in it, which causes the include to happen alot which cause performance drops.
-So we run the following command:
+By default, folder `compiled` will be created in your `resources/views` path and flatten files will be placed in it
 
-    $ php artisan compile:blades test
+Now you can use command `compiled_view();` instead of `view();` for using flatten views IF they present
 
-### Input File
-![test.blade.php](https://goo.gl/hwNSCc)
-![subviews/included-test.blade.php](https://goo.gl/jkoseH)
+WIP
 
-### Output File
-![test.blade.php](https://goo.gl/PGRkJk)

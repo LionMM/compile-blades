@@ -1,90 +1,81 @@
 <?php
 
-namespace Techo\CompileBlades\Console;
+namespace Lionmm\CompileBlades\Console;
 
 use Illuminate\Console\Command;
-use Illuminate\Foundation\Inspiring;
 
 class CompileBlades extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-     protected $signature = 'compile:blades {blade-name} {--location=}';
+    protected $signature = 'view:compile {blade-name} {--location=}';
+    protected $description = 'Flatten blade template with includes into 1 flat file';
 
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Compile blades into 1 flat file';
-
-    /**
-     * Execute the console command.
-     *
-     * @return mixed
-     */
     public function handle()
     {
         $viewName = $this->argument('blade-name');
+        $placeLocation = $this->option('location');
 
-        if(!in_array($viewName, config('compileblades.excluded_views'))) {
-            $blade = $this->compile(view($viewName)->getPath());
+        if (in_array($viewName, config('compileblades.excluded_views'), true)) {
+            $this->error(sprintf('%s is excluded', $viewName));
 
-            if(is_null($this->option('location'))) {
+            return 0;
+        }
 
-                file_put_contents(view($viewName)->getPath(), $blade);
+        $blade = $this->compile(view($viewName)->getPath());
 
+        if (!$placeLocation) {
+            if ($defaultLocation = config('compileblades.default_folder')) {
+                $placeLocation = $defaultLocation . '.' . $viewName;
             } else {
-
-                $location = str_replace('.', '/', $this->option('location'));
-                $newPath = resource_path('views') . "/$location.blade.php";
-
-                $dirname = dirname($newPath);
-                if (!is_dir($dirname))
-                {
-                    mkdir($dirname, 0755, true);
-                }
-
-                file_put_contents($newPath, $blade);
+                $placeLocation = $viewName;
             }
         }
 
-        $this->comment(PHP_EOL . Inspiring::quote() . PHP_EOL);
+        $location = str_replace('.', '/', $placeLocation);
+        $newPath = resource_path('views') . "/$location.blade.php";
+
+        $dirname = dirname($newPath);
+        if (!is_dir($dirname)) {
+            if (!mkdir($dirname, 0755, true) && !is_dir($dirname)) {
+                throw new \RuntimeException(sprintf('Directory "%s" was not created', $dirname));
+            }
+        }
+
+        file_put_contents($newPath, $blade);
+
+        $this->info($viewName . ' compiled successfully! Result stored in ' . $newPath);
+
+        return 0;
     }
 
-    private function compile($viewPath)
+    private function compile($viewPath): string
     {
         $blade = file_get_contents($viewPath);
+        $this->clearComments($blade);
+        $this->replacePhpSections($blade);
         $this->implodeLayout($blade); //A1 @inprogress
         $this->implodeIncludes($blade); //A2 @pending
 
         return $blade;
     }
 
-    private function implodeLayout(&$blade)
+    private function implodeLayout(&$blade): void
     {
-        $sections = $this->seperateSections($blade);//B1 @done
+        $sections = $this->separateSections($blade);//B1 @done
         $this->replaceLayout($blade);//B2 @done
         $this->replaceSections($blade, $sections);//B3 @inprogress
-
-
     }
 
-    private function implodeIncludes(&$blade)
+    private function implodeIncludes(&$blade): string
     {
         $i = 0;
 
         // get includes names
         preg_match_all("/@include[(]['|\"](.*?)['|\"]((,)(.*?))?[)]$/sim", $blade, $pregOutput);
-        
+
         $this->ignoreExcludedViews($pregOutput);
         $this->ignoreComposerViews($pregOutput);
 
         while (!empty($pregOutput[0])) {
-
             // split array from include name
             $includes = $pregOutput[1];
             $arraysSent = $pregOutput[4];
@@ -101,8 +92,13 @@ class CompileBlades extends Command
             // Include files and append variables
             foreach ($includesWithVariables as $subViewName => $arrayOfVariables) {
                 $subView = $arrayOfVariables . "\r\n" . file_get_contents(view($subViewName)->getPath());
-                $blade =
-                    preg_replace("/@include[(]['|\"]" . $subViewName . "['|\"]((,)(.*?))?[)]$/sim", $subView, $blade);
+                $this->clearComments($subView);
+                $this->replacePhpSections($subView);
+                $blade = preg_replace(
+                    "/@include[(]['|\"]" . $subViewName . "['|\"]((,)(.*?))?[)]$/sim",
+                    $subView,
+                    $blade
+                );
             }
 
             preg_match_all("/@include[(]['|\"](.*?)['|\"]((,)(.*?))?[)]$/sim", $blade, $pregOutput);
@@ -124,10 +120,14 @@ class CompileBlades extends Command
      * @return array
      * @done
      */
-    private function seperateSections(&$blade)
+    private function separateSections(&$blade): array
     {
         preg_match_all("/@section[(]['|\"](.*?)['|\"][)](.*?)@endsection/si", $blade, $pregOutput);
-        $blade = preg_replace("/@section[(]['|\"](.*?)['|\"][)](.*?)@endsection/si", "{{-- section $1 was here --}}", $blade);
+        $blade = preg_replace(
+            "/@section[(]['|\"](.*?)['|\"][)](.*?)@endsection/si",
+            "{{-- section $1 was here --}}",
+            $blade
+        );
         $sections = [];
         foreach ($pregOutput[2] as $index => $section) {
             $sections[$pregOutput[1][$index]] = $section;
@@ -136,7 +136,18 @@ class CompileBlades extends Command
         return $sections;
     }
 
-    private function replaceLayout(&$blade)
+    private function clearComments(&$blade)
+    {
+        $blade = preg_replace('/{{--.*--}}/', '', $blade);
+    }
+
+    private function replacePhpSections(&$blade)
+    {
+        $blade = preg_replace('/@php[^(]/', '<?php' . PHP_EOL, $blade);
+        $blade = preg_replace('/@endphp/', '?>', $blade);
+    }
+
+    private function replaceLayout(&$blade): void
     {
         //find the extended file
         preg_match_all("/@extends[(]['|\"](.*?)['|\"][)]/si", $blade, $output);
@@ -147,18 +158,20 @@ class CompileBlades extends Command
             $blade = preg_replace("/@extends[(]['|\"](.*?)['|\"][)]/si", "{{-- Extend $1 was here --}}", $blade);
             //bring the layout
             $layout = file_get_contents(view($layout)->getPath());
-            $blade = $blade . " " . $layout;
+            $this->clearComments($layout);
+            $this->replacePhpSections($layout);
+            $blade .= ' ' . $layout;
         }
     }
 
-    private function replaceSections(&$blade, $sections)
+    private function replaceSections(&$blade, $sections): void
     {
         preg_match_all("/@yield[(]['\"]([^,'\"]*?)['\"][,]?(.*?)?[)]/si", $blade, $output);
         $sectionsName = $output[1];
         $alternatives = $output[2];
         foreach ($sectionsName as $key => $sectionName) {
             $alternative = isset($alternatives[$key]) ? $alternatives[$key] : '{{--yield didnt have alternative--}}';
-            
+
             if (isset($sections[$sectionName])) {
                 $blade = preg_replace(
                     "/@yield[(]['|\"]" . $sectionName . "['|\"].*?[)]/m",
@@ -178,33 +191,44 @@ class CompileBlades extends Command
     private function ignoreExcludedViews(&$pregOutput)
     {
         $excludedViews = config('compileblades.excluded_views');
-        foreach($excludedViews as $exclude) {
+        foreach ($excludedViews as $exclude) {
             $key = array_search($exclude, $pregOutput[1], true);
-            if($key !== false) {
-                unset($pregOutput[0][$key]);
-                unset($pregOutput[1][$key]);
-                unset($pregOutput[2][$key]);
-                unset($pregOutput[3][$key]);
-                unset($pregOutput[4][$key]);
+            if ($key !== false) {
+                unset(
+                    $pregOutput[0][$key],
+                    $pregOutput[1][$key],
+                    $pregOutput[2][$key],
+                    $pregOutput[3][$key],
+                    $pregOutput[4][$key]
+                );
             }
         }
     }
 
-    private function ignoreComposerViews(&$pregOutput)
+    private function ignoreComposerViews(&$pregOutput): void
     {
-        if(config('compileblades.view_composers.exclude_sections') && config('compileblades.view_composers.composerserviceprovider_location')) {
-
+        if (
+            config('compileblades.view_composers.exclude_sections')
+            &&
+            config('compileblades.view_composers.composerserviceprovider_location')
+        ) {
             $provider = file_get_contents(config('compileblades.view_composers.composerserviceprovider_location'));
-            preg_match_all("/(View::composer|view[(][)]->composer)[(]['|\"](.*?)['|\"],(.*?)[)]/si", $provider, $output);
+            preg_match_all(
+                "/(View::composer|view[(][)]->composer)[(]['|\"](.*?)['|\"],(.*?)[)]/si",
+                $provider,
+                $output
+            );
 
-            foreach($output[2] as $exclude) {
+            foreach ($output[2] as $exclude) {
                 $key = array_search($exclude, $pregOutput[1], true);
-                if($key !== false) {
-                    unset($pregOutput[0][$key]);
-                    unset($pregOutput[1][$key]);
-                    unset($pregOutput[2][$key]);
-                    unset($pregOutput[3][$key]);
-                    unset($pregOutput[4][$key]);
+                if ($key !== false) {
+                    unset(
+                        $pregOutput[0][$key],
+                        $pregOutput[1][$key],
+                        $pregOutput[2][$key],
+                        $pregOutput[3][$key],
+                        $pregOutput[4][$key]
+                    );
                 }
             }
         }

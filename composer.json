@@ -9,25 +9,32 @@
         {
             "name": "Lisa Wouters",
             "email": "lisa@fw4.be"
+        },
+        {
+            "name": "Kirill Snovidov",
+            "email": "github@snovidov.com"
         }
     ],
     "license": "MIT",
     "require": {
-        "php": ">=5.5.9",
-        "illuminate/contracts": "5.0.*|5.1.*|5.2.*|5.3.*|5.4.*|5.5.*|5.6.*|5.7.*|5.8.*|5.9.*",
-        "illuminate/support": "5.0.*|5.1.*|5.2.*|5.3.*|5.4.*|5.5.*|5.6.*|5.7.*|5.8.*",
-        "illuminate/console": "5.0.*|5.1.*|5.2.*|5.3.*|5.4.*|5.5.*|5.6.*|5.7.*|5.8.*",
-        "illuminate/view": "5.0.*|5.1.*|5.2.*|5.3.*|5.4.*|5.5.*|5.6.*|5.7.*|5.8.*",
-        "symfony/process": "^2.6|^3.1.0|4.1.*|4.2.*|4.3.*|4.4.*"
-      },
+        "php": "^7.3|^8.0",
+        "illuminate/contracts": "^8.0.0",
+        "illuminate/support": "^8.0.0",
+        "illuminate/console": "^8.0.0",
+        "illuminate/view": "^8.0.0",
+        "symfony/process": "^5.1"
+    },
     "require-dev": {
-        "phpunit/phpunit": "~4.8|~5.0|~6.0|~7.0|~7.5",
-        "mockery/mockery": "0.9.*|^1.0"
+        "phpunit/phpunit": "^8.4|^9.0",
+        "mockery/mockery": "^1.3.1"
     },
     "autoload": {
         "psr-4": {
-            "Techo\\CompileBlades\\": "./src/"
-        }
+            "Lionmm\\CompileBlades\\": "./src/"
+        },
+        "files": [
+            "./src/Helper.php"
+        ]
     },
     "autoload-dev": {
         "classmap": [
@@ -42,7 +49,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Techo\\CompileBlades\\CompileBladesServiceProvider"
+                "Lionmm\\CompileBlades\\CompileBladesServiceProvider"
             ]
         }
     }
